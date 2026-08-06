@@ -8,6 +8,13 @@ from .views import RegisterView, CreateCircleView
 
 from .views import RegisterView, CreateCircleView, JoinCircleView
 
+from .views import (
+    RegisterView,
+    CreateCircleView,
+    JoinCircleView,
+    ContributeView,
+)
+
 urlpatterns = [
     path("register/", RegisterView.as_view()),
     path("login/", TokenObtainPairView.as_view()),
@@ -15,4 +22,8 @@ urlpatterns = [
 
     path("circles/", CreateCircleView.as_view()),
     path("circles/join/", JoinCircleView.as_view()),
+    path(
+    "rounds/<int:round_id>/contribute/",
+    ContributeView.as_view(),
+),
 ]

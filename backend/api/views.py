@@ -11,12 +11,61 @@ from .serializers import (
 
 from .models import Circle, CircleMember, Round
 from .serializers import RegisterSerializer, CircleSerializer
+from .models import Circle, CircleMember, Round, Contribution
+
+from .serializers import (
+    RegisterSerializer,
+    CircleSerializer,
+    JoinCircleSerializer,
+    ContributionSerializer,
+)
 
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
+
+
+
+class ContributeView(APIView):
+
+    def post(self, request, round_id):
+
+        try:
+            round_obj = Round.objects.get(id=round_id)
+        except Round.DoesNotExist:
+            return Response({"error": "Round not found"}, status=404)
+
+        serializer = ContributionSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+
+        if Contribution.objects.filter(
+            round=round_obj,
+            member=request.user
+        ).exists():
+
+            return Response(
+                {"error": "Already contributed"},
+                status=400
+            )
+
+        contribution = Contribution.objects.create(
+            round=round_obj,
+            member=request.user,
+            amount=serializer.validated_data["amount"]
+        )
+
+        return Response(
+            {
+                "message": "Contribution successful",
+                "amount": contribution.amount
+            },
+            status=201
+        )
+
 
 
 
@@ -102,3 +151,5 @@ class CreateCircleView(APIView):
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    

@@ -105,3 +105,26 @@ class Contribution(models.Model):
 
     def __str__(self):
         return f"{self.member.username} - Round {self.round.round_number}"
+
+
+class Payout(models.Model):
+
+    round = models.OneToOneField(
+        Round,
+        on_delete=models.CASCADE
+    )
+
+    recipient = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    total_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    approved_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Payout - Round {self.round.round_number}"

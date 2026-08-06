@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Circle
+from .models import Circle, Contribution
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -15,9 +15,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
-class JoinCircleSerializer(serializers.Serializer):
-    invite_code = serializers.UUIDField()
-    
 class CircleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Circle
@@ -28,3 +25,14 @@ class CircleSerializer(serializers.ModelSerializer):
             "created_at",
         ]
         read_only_fields = ["invite_code", "created_at"]
+
+
+class JoinCircleSerializer(serializers.Serializer):
+    invite_code = serializers.UUIDField()
+
+
+class ContributionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Contribution
+        fields = ["amount"]

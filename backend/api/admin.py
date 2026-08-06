@@ -5,9 +5,11 @@ from .models import (
     CircleMember,
     Round,
     Contribution,
+    Payout,
 )
 
 admin.site.register(Circle)
 admin.site.register(CircleMember)
 admin.site.register(Round)
 admin.site.register(Contribution)
+admin.site.register(Payout)

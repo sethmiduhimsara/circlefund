@@ -298,3 +298,8 @@ POST /api/rounds/<round_id>/approve/
 # Author
 
 Developed as a technical assessment for the PayBay Backend Developer assignment.
+
+#app login password user side
+
+username : sethmidu
+password: sethmidu123

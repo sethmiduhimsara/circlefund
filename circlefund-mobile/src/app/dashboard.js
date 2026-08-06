@@ -15,7 +15,7 @@ export default function Dashboard() {
           fontWeight: "bold",
         }}
       >
-        Dashboard
+        User Tets Dashboard....
       </Text>
     </View>
   );

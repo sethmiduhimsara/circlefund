@@ -78,3 +78,30 @@ class Round(models.Model):
 
     def __str__(self):
         return f"Round {self.round_number}"
+
+
+class Contribution(models.Model):
+
+    round = models.ForeignKey(
+        Round,
+        on_delete=models.CASCADE,
+        related_name="contributions"
+    )
+
+    member = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    contributed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("round", "member")
+
+    def __str__(self):
+        return f"{self.member.username} - Round {self.round.round_number}"

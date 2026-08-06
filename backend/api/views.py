@@ -9,7 +9,7 @@ from .serializers import (
     JoinCircleSerializer,
 )
 
-from .models import Circle, CircleMember
+from .models import Circle, CircleMember, Round
 from .serializers import RegisterSerializer, CircleSerializer
 
 
@@ -76,17 +76,29 @@ class CreateCircleView(APIView):
 
         if serializer.is_valid():
 
+            # Create the circle
             circle = serializer.save(admin=request.user)
 
+            # Add creator as first member
             CircleMember.objects.create(
                 circle=circle,
                 user=request.user,
                 rotation_position=1
             )
 
+            # Automatically create Round 1
+            Round.objects.create(
+                circle=circle,
+                recipient=request.user,
+                round_number=1
+            )
+
             return Response(
-                CircleSerializer(circle).data,
+                {
+                    "message": "Circle created successfully",
+                    "circle": CircleSerializer(circle).data
+                },
                 status=status.HTTP_201_CREATED
             )
 
-        return Response(serializer.errors, status=400)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

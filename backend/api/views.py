@@ -3,6 +3,11 @@ from rest_framework import generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from .serializers import (
+    RegisterSerializer,
+    CircleSerializer,
+    JoinCircleSerializer,
+)
 
 from .models import Circle, CircleMember
 from .serializers import RegisterSerializer, CircleSerializer
@@ -13,6 +18,56 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
 
+
+
+
+class JoinCircleView(APIView):
+
+    def post(self, request):
+
+        serializer = JoinCircleSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+
+        invite_code = serializer.validated_data["invite_code"]
+
+        try:
+            circle = Circle.objects.get(invite_code=invite_code)
+        except Circle.DoesNotExist:
+            return Response(
+                {"error": "Circle not found"},
+                status=404
+            )
+
+        if CircleMember.objects.filter(
+            circle=circle,
+            user=request.user
+        ).exists():
+
+            return Response(
+                {"error": "Already a member"},
+                status=400
+            )
+
+        member_count = CircleMember.objects.filter(circle=circle).count()
+
+        if member_count >= 4:
+            return Response(
+                {"error": "Circle is full"},
+                status=400
+            )
+
+        CircleMember.objects.create(
+            circle=circle,
+            user=request.user,
+            rotation_position=member_count + 1
+        )
+
+        return Response({
+            "message": "Joined successfully",
+            "rotation_position": member_count + 1
+        })
 
 class CreateCircleView(APIView):
 

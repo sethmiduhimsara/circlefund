@@ -1,12 +1,18 @@
 from django.urls import path
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
-from .views import RegisterView
+from .views import RegisterView, CreateCircleView
+
+from .views import RegisterView, CreateCircleView, JoinCircleView
 
 urlpatterns = [
-    path("register/", RegisterView.as_view(), name="register"),
+    path("register/", RegisterView.as_view()),
+    path("login/", TokenObtainPairView.as_view()),
+    path("token/refresh/", TokenRefreshView.as_view()),
 
-    path("login/", TokenObtainPairView.as_view(), name="login"),
-
-    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("circles/", CreateCircleView.as_view()),
+    path("circles/join/", JoinCircleView.as_view()),
 ]

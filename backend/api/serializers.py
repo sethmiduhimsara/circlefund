@@ -15,6 +15,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
+class JoinCircleSerializer(serializers.Serializer):
+    invite_code = serializers.UUIDField()
+    
 class CircleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Circle

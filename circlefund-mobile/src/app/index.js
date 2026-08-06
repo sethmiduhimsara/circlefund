@@ -4,8 +4,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Alert,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
 import api from "../services/api";
@@ -14,8 +14,25 @@ export default function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const login = async () => {
+    setError("");
+
+    if (!username.trim()) {
+      setError("Username is required.");
+      return;
+    }
+
+    if (!password.trim()) {
+      setError("Password is required.");
+      return;
+    }
+
     try {
+      setLoading(true);
+
       const response = await api.post("login/", {
         username,
         password,
@@ -23,12 +40,19 @@ export default function LoginScreen() {
 
       console.log(response.data);
 
-      Alert.alert("Success", "Login Successful!");
-
       router.push("/dashboard");
-    } catch (error) {
-      console.log(error.response?.data);
-      Alert.alert("Login Failed", "Invalid username or password");
+    } catch (err) {
+      console.log(err);
+
+      if (err.response?.status === 401) {
+        setError("Invalid username or password.");
+      } else if (err.message === "Network Error") {
+        setError("Cannot connect to the server.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,7 +71,10 @@ export default function LoginScreen() {
           placeholder="Username"
           placeholderTextColor="#888"
           value={username}
-          onChangeText={setUsername}
+          onChangeText={(text) => {
+            setUsername(text);
+            setError("");
+          }}
           style={styles.input}
         />
 
@@ -56,12 +83,29 @@ export default function LoginScreen() {
           placeholderTextColor="#888"
           secureTextEntry
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => {
+            setPassword(text);
+            setError("");
+          }}
           style={styles.input}
         />
 
-        <TouchableOpacity style={styles.button} onPress={login}>
-          <Text style={styles.buttonText}>Login</Text>
+        {error ? (
+          <View style={styles.errorBox}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        ) : null}
+
+        <TouchableOpacity
+          style={[styles.button, loading && { opacity: 0.7 }]}
+          onPress={login}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Login</Text>
+          )}
         </TouchableOpacity>
 
         <Text style={styles.footer}>
@@ -126,6 +170,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#E5E7EB",
+  },
+
+  errorBox: {
+    backgroundColor: "#FEE2E2",
+    borderColor: "#EF4444",
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 16,
+  },
+
+  errorText: {
+    color: "#B91C1C",
+    fontSize: 14,
+    textAlign: "center",
+    fontWeight: "500",
   },
 
   button: {

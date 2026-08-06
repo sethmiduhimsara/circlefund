@@ -13,6 +13,7 @@ from .views import (
     CreateCircleView,
     JoinCircleView,
     ContributeView,
+    ApprovePayoutView,
 )
 
 urlpatterns = [
@@ -25,5 +26,9 @@ urlpatterns = [
     path(
     "rounds/<int:round_id>/contribute/",
     ContributeView.as_view(),
+),
+path(
+    "rounds/<int:round_id>/approve/",
+    ApprovePayoutView.as_view(),
 ),
 ]

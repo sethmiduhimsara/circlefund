@@ -22,3 +22,27 @@ class Circle(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class CircleMember(models.Model):
+    circle = models.ForeignKey(
+        Circle,
+        on_delete=models.CASCADE,
+        related_name="members"
+    )
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    rotation_position = models.PositiveSmallIntegerField()
+
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("circle", "user")
+        ordering = ["rotation_position"]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.circle.name}"

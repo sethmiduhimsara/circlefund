@@ -46,3 +46,35 @@ class CircleMember(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.circle.name}"
+
+
+class Round(models.Model):
+
+    STATUS_CHOICES = [
+        ("OPEN", "OPEN"),
+        ("PENDING_APPROVAL", "PENDING_APPROVAL"),
+        ("CLOSED", "CLOSED"),
+    ]
+
+    circle = models.ForeignKey(
+        Circle,
+        on_delete=models.CASCADE
+    )
+
+    recipient = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    round_number = models.PositiveIntegerField()
+
+    status = models.CharField(
+        max_length=30,
+        choices=STATUS_CHOICES,
+        default="OPEN"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Round {self.round_number}"
